@@ -1,0 +1,25 @@
+1. Postawić discord bota
+2. TODO: Zarejestrować się do API i puścić requesty z kodu
+3. TODO: Proste komendy do puszczania requestów - pobyt + wyciagniecie danych z odpowiedzi do wygodnego formatu
+4. TODO: Proste komendy do puszczania requestów - podróż + wyciagniecie danych z odpowiedzi do wygodnego formatu
+5. TODO: Dodanie kolejkowania zapytań - by nie zapchało dostępu do API
+6. TODO: Połączenie zapytań pobyt + podróż (osobne też nadal działają)
+7. TODO: "Mądre" wybieranie dokładnego miejsca z większego obszaru (Polska -> Gdańsk)
+8. TODO: "Mądre" wybieranie przedziału czasowego
+9. TODO:
+10. TODO:
+11. TODO:
+12. TODO:
+13. TODO:
+14. TODO: 
+15. TODO: ? Podpięcie komend głosowych?
+16. TODO: Spisanie dokumentacji
+
+
+Dane do ściągania z API:
+> Wakacje Wroclaw
+api:
+Wroclaw > noclegi (nazwa obiektu, lokalizacja dokladna, czas dostępności, ile osób?, cena?)
+Wroclaw > podróż:
+bot pyta z jakiego miejsca do Wro chcemy
+b> rodzaj transportu, czas (odjazd, przejazd, przyjazd), cena, dokładne stacje
