@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 
 from place import get_place
 from travel import get_sth
+from place import get_location
+from place import get_location_hotels
 
 load_dotenv()
 
@@ -32,6 +34,16 @@ class MyClient(discord.Client):
         if message.content.startswith("kuba"):
             sth = get_sth()
             sth = "dalo kuba"
+            await message.channel.send(sth)
+
+        if message.content.startswith("miejsce"):
+            sth = get_location()
+            sth = "miejsce"
+            await message.channel.send(sth)
+        
+        if message.content.startswith("hotel"):
+            sth = get_location_hotels()
+            sth = "hotele"
             await message.channel.send(sth)
 
 
