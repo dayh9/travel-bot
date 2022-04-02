@@ -3,27 +3,27 @@ from enum import Enum
 
 class HotelList(Enum):
     LOCATION = "$location "
+    HOTELS = "$hotels"
 
-    CHECKIN = "$check in "
-    CHECKOUT = "$check out "
+    CHECK_IN = "$check in "
+    CHECK_OUT = "$check out "
 
-    ADULTS1 = "$adults "
-    CHILDREN1 = "$children "
+    ADULTS = "$adults "
+    CHILDREN = "$children "
 
-    STARRATINGS = "$star rating "
+    STAR_RATINGS = "$star rating "
 
-    PRICEMIN = "$price min "
-    PRICEMAX = "$price max "
+    PRICE_MIN = "$price min "
+    PRICE_MAX = "$price max "
 
-    SORTORDER = "$sort "
+    SORT_ORDER = "$sort "
 
-    GUESTRATINGMINIMUM = "$ guest rating min "
-
+    GUEST_RATING_MINIMUM = "$ guest rating min "
 
 
 class HotelDetails(Enum):
-    CHECKIN = "$check in "
-    CHECKOUT = "$check out "
+    CHECK_IN = "$check in "
+    CHECK_OUT = "$check out "
 
-    ADULTS1 = "$adults "
-    CHILDREN1 = "$children "
+    ADULTS = "$adults "
+    CHILDREN = "$children "

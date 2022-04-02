@@ -3,8 +3,9 @@ import os
 from dotenv import load_dotenv
 
 import discord
-from place import get_hotels_for_location, get_location, get_location_hotels, get_place
-from travel import get_sth
+from commands import HotelDetails, HotelList
+from place import get_hotels_for_location
+from travel_session import TravelSession
 
 load_dotenv()
 
@@ -12,37 +13,34 @@ DISCORD_KEY = os.getenv("DISCORD_KEY")
 
 
 class MyClient(discord.Client):
+    def __init__(self, *, loop=None, **options):
+        super().__init__(loop=loop, **options)
+        self.ts = None
+
     async def on_ready(self):
         print("Logged on as {0}!".format(self.user))
 
     async def on_message(self, message):
         print("Message from {0.author}: {0.content}".format(message))
 
-        if message.content.startswith("$hello"):
-            await message.channel.send("Hello!")
+        if message.author == client.user:
+            return
 
-        if message.content.startswith("elo"):
-            await message.channel.send("no elo")
+        if message.content.startswith(HotelList.LOCATION.value):
+            location = message.content[len(HotelList.LOCATION.value) :]
+            self.ts = TravelSession(location)
+            name, _ = self.ts.get_name_and_destination_id()
+            await message.channel.send(name)
 
-        if message.content.startswith("daj"):
-            sth = get_place()
-            sth = "dalo"
-            await message.channel.send(sth)
+        if message.content.startswith(HotelList.HOTELS.value):
+            # location = message.content[len(HotelList.HOTELS) :]
+            hotels = self.ts.get_hotels_for_destination_id()
+            await message.channel.send(hotels)
 
-        if message.content.startswith("kuba"):
-            sth = get_sth()
-            # sth = "dalo kuba"
-            await message.channel.send(sth)
-
-        if message.content.startswith("miejsce"):
-            sth = get_location()
-            # sth = "miejsce"
-            await message.channel.send(sth)
-
-        if message.content.startswith("hotel"):
-            sth = get_location_hotels()
-            # sth = "hotele"
-            await message.channel.send(sth)
+        if message.content.startswith(HotelList.ADULTS.value):
+            adults = message.content[len(HotelList.ADULTS.value) :]
+            response = self.ts.add_to_querysting("adults1", adults)
+            await message.channel.send(response)
 
 
 client = MyClient()
