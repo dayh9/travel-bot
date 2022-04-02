@@ -2,6 +2,8 @@ from enum import Enum
 
 
 class HotelList(Enum):
+    HELP = "$help"
+
     LOCATION = "$location "
     HOTELS = "$hotels"
 
@@ -18,7 +20,29 @@ class HotelList(Enum):
 
     SORT_ORDER = "$sort "
 
-    GUEST_RATING_MINIMUM = "$ guest rating min "
+    GUEST_RATING_MINIMUM = "$guest rating min "
+
+
+class HotelListDesc(Enum):
+    HELP = " -> show possible commands"
+
+    LOCATION = "<value> -> provide location for your next journey [string]"
+    HOTELS = " -> run to list hotels in the location"
+
+    CHECK_IN = "<value> -> provide check in date [format: YYYY-MM-DD]"
+    CHECK_OUT = "<value> -> provide check out date [format: YYYY-MM-DD]"
+
+    ADULTS = "<value> -> provide number of adults to accomodate [number]"
+    CHILDREN = "<value> -> provide number of children to accomodate [number]"
+
+    STAR_RATINGS = '<values> -> provide star rating [values separated with ",": 2,4,5]'
+
+    PRICE_MIN = "<value> -> provide price min [number]"
+    PRICE_MAX = "<value> -> provide price max [number]"
+
+    SORT_ORDER = "<value> -> provide sort option [one of: BEST_SELLER, STAR_RATING_HIGHEST_FIRST, STAR_RATING_LOWEST_FIRST, DISTANCE_FROM_LANDMARK, GUEST_RATING, PRICE_HIGHEST_FIRST, PRICE"
+
+    GUEST_RATING_MINIMUM = "<value> -> guest rating min [number]"
 
 
 class HotelDetails(Enum):

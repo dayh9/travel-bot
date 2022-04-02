@@ -3,9 +3,8 @@ import os
 from dotenv import load_dotenv
 
 import discord
-from commands import HotelDetails, HotelList
+from commands import HotelDetails, HotelList, HotelListDesc
 from hotel_session import HotelSession
-from place import get_hotels_for_location
 
 load_dotenv()
 
@@ -26,6 +25,15 @@ class MyClient(discord.Client):
         if message.author == client.user:
             return
 
+        # TODO: ADD CLEARING QUERYSTRING COMMAND
+
+        if message.content.startswith(HotelList.HELP.value):
+            commands = [c for c in zip(HotelList, HotelListDesc)]
+            response_message = "Possible commands: \n"
+            for command in commands:
+                response_message += f"{command[0].value}{command[1].value} \n"
+            await message.channel.send(response_message)
+
         if message.content.startswith(HotelList.LOCATION.value):
             location = message.content[len(HotelList.LOCATION.value) :]
             self.hotel_session = HotelSession(location)
@@ -33,14 +41,71 @@ class MyClient(discord.Client):
             await message.channel.send(name)
 
         if message.content.startswith(HotelList.HOTELS.value):
-            # location = message.content[len(HotelList.HOTELS) :]
-            hotels = self.hotel_session.get_hotels_for_destination_id()
+            if self.hotel_session:
+                hotels = self.hotel_session.get_hotels_for_destination_id()
+            else:
+                hotels = "no location boilerplate"
             await message.channel.send(hotels)
 
         if message.content.startswith(HotelList.ADULTS.value):
             adults = message.content[len(HotelList.ADULTS.value) :]
-            response = self.hotel_session.add_to_querysting("adults1", adults)
-            await message.channel.send(response)
+            response_message = self.hotel_session.add_to_querysting("adults1", adults)
+            await message.channel.send(response_message)
+
+        if message.content.startswith(HotelList.CHECK_IN.value):
+            check_in = message.content[len(HotelList.CHECK_IN.value) :]
+            response_message = self.hotel_session.add_to_querysting("checkIn", check_in)
+            await message.channel.send(response_message)
+
+        if message.content.startswith(HotelList.CHECK_OUT.value):
+            check_out = message.content[len(HotelList.CHECK_OUT.value) :]
+            response_message = self.hotel_session.add_to_querysting(
+                "checkOut", check_out
+            )
+            await message.channel.send(response_message)
+
+        if message.content.startswith(HotelList.CHILDREN.value):
+            children = message.content[len(HotelList.CHILDREN.value) :]
+            response_message = self.hotel_session.add_to_querysting(
+                "children1", children
+            )
+            await message.channel.send(response_message)
+
+        if message.content.startswith(HotelList.STAR_RATINGS.value):
+            star_ratings = message.content[len(HotelList.STAR_RATINGS.value) :]
+            response_message = self.hotel_session.add_to_querysting(
+                "starRatings", star_ratings
+            )
+            await message.channel.send(response_message)
+
+        if message.content.startswith(HotelList.PRICE_MIN.value):
+            price_min = message.content[len(HotelList.PRICE_MIN.value) :]
+            response_message = self.hotel_session.add_to_querysting(
+                "priceMin", price_min
+            )
+            await message.channel.send(response_message)
+
+        if message.content.startswith(HotelList.PRICE_MAX.value):
+            price_max = message.content[len(HotelList.PRICE_MAX.value) :]
+            response_message = self.hotel_session.add_to_querysting(
+                "priceMax", price_max
+            )
+            await message.channel.send(response_message)
+
+        # BEST_SELLER, STAR_RATING_HIGHEST_FIRST, STAR_RATING_LOWEST_FIRST, DISTANCE_FROM_LANDMARK, GUEST_RATING, PRICE_HIGHEST_FIRST, PRICE
+        if message.content.startswith(HotelList.SORT_ORDER.value):
+            sort = message.content[len(HotelList.SORT_ORDER.value) :]
+            response_message = self.hotel_session.add_to_querysting("sortOrder", sort)
+            await message.channel.send(response_message)
+
+        if message.content.startswith(HotelList.GUEST_RATING_MINIMUM.value):
+            guest_rating_minimum = message.content[
+                len(HotelList.GUEST_RATING_MINIMUM.value) :
+            ]
+            response_message = self.hotel_session.add_to_querysting(
+                "guestRatingMin", guest_rating_minimum
+            )
+            await message.channel.send(response_message)
 
 
 client = MyClient()

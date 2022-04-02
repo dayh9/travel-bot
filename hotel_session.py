@@ -79,8 +79,9 @@ class HotelSession:
             "currency": self.currency,
         }
 
-        for key, value in self.querystring.items():
-            querystring[key] = value
+        if self.querystring:
+            for key, value in self.querystring.items():
+                querystring[key] = value
 
         headers = {
             "x-rapidapi-key": RAPIDAPI_KEY,
@@ -91,10 +92,15 @@ class HotelSession:
         response = requests.request("GET", url, headers=headers, params=querystring)
 
         data = json.loads(response.text)
-        new_message = f"""{data["data"]["body"]["header"]} 
-        Proponowany hotel:
-        {data["data"]["body"]["searchResults"]["results"][0]["name"]}
-        """
+
+        if data["data"]["body"]["searchResults"]["results"]:
+            new_message = f"""{data["data"]["body"]["header"]}
+            Proponowany hotel:
+            {data["data"]["body"]["searchResults"]["results"][0]["name"]}
+            """
+        else:
+            new_message = "No results found"
+
         # Adres:
         # {data["data"]["body"]["searchResults"]["results"][0]["address"]["streetAddress"]}
 
