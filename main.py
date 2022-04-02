@@ -1,12 +1,10 @@
 import os
 
-import discord
 from dotenv import load_dotenv
 
-from place import get_place
+import discord
+from place import get_hotels_for_location, get_location, get_location_hotels, get_place
 from travel import get_sth
-from place import get_location
-from place import get_location_hotels
 
 load_dotenv()
 
@@ -33,17 +31,17 @@ class MyClient(discord.Client):
 
         if message.content.startswith("kuba"):
             sth = get_sth()
-            sth = "dalo kuba"
+            # sth = "dalo kuba"
             await message.channel.send(sth)
 
         if message.content.startswith("miejsce"):
             sth = get_location()
-            sth = "miejsce"
+            # sth = "miejsce"
             await message.channel.send(sth)
-        
+
         if message.content.startswith("hotel"):
             sth = get_location_hotels()
-            sth = "hotele"
+            # sth = "hotele"
             await message.channel.send(sth)
 
 
