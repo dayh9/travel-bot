@@ -9,7 +9,7 @@ load_dotenv()
 RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
 
 
-class TravelSession:
+class HotelSession:
     def __init__(
         self,
         location,
