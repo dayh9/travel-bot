@@ -3,6 +3,7 @@ from enum import Enum
 
 class HotelList(Enum):
     HELP = "$help"
+    CLEAR = "$clear"
 
     LOCATION = "$location "
     HOTELS = "$hotels"
@@ -25,6 +26,7 @@ class HotelList(Enum):
 
 class HotelListDesc(Enum):
     HELP = " -> show possible commands"
+    CLEAR = " -> clear filters for hotels"
 
     LOCATION = "<value> -> provide location for your next journey [string]"
     HOTELS = " -> run to list hotels in the location"

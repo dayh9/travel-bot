@@ -1,4 +1,5 @@
 import os
+from html import unescape
 
 from dotenv import load_dotenv
 
@@ -14,7 +15,7 @@ DISCORD_KEY = os.getenv("DISCORD_KEY")
 class MyClient(discord.Client):
     def __init__(self, *, loop=None, **options):
         super().__init__(loop=loop, **options)
-        self.hotel_session = None
+        self.hotel_session = HotelSession()
 
     async def on_ready(self):
         print("Logged on as {0}!".format(self.user))
@@ -25,8 +26,6 @@ class MyClient(discord.Client):
         if message.author == client.user:
             return
 
-        # TODO: ADD CLEARING QUERYSTRING COMMAND
-
         if message.content.startswith(HotelList.HELP.value):
             commands = [c for c in zip(HotelList, HotelListDesc)]
             response_message = "Possible commands: \n"
@@ -34,11 +33,16 @@ class MyClient(discord.Client):
                 response_message += f"{command[0].value}{command[1].value} \n"
             await message.channel.send(response_message)
 
+        if message.content.startswith(HotelList.CLEAR.value):
+            self.hotel_session.querystring = None
+            await message.channel.send("Filters cleaned")
+
         if message.content.startswith(HotelList.LOCATION.value):
             location = message.content[len(HotelList.LOCATION.value) :]
-            self.hotel_session = HotelSession(location)
-            name, _ = self.hotel_session.get_name_and_destination_id()
-            await message.channel.send(name)
+            # self.hotel_session = HotelSession()
+            name, _ = self.hotel_session.set_location_and_destination_id(location)
+            name_message = f"Wybrano {name}"
+            await message.channel.send(name_message)
 
         if message.content.startswith(HotelList.HOTELS.value):
             if self.hotel_session:
@@ -105,6 +109,11 @@ class MyClient(discord.Client):
             response_message = self.hotel_session.add_to_querysting(
                 "guestRatingMin", guest_rating_minimum
             )
+            await message.channel.send(response_message)
+
+        if message.content.startswith("$test"):
+
+            response_message = unescape("total 155 € for 5&nbsp;nights")
             await message.channel.send(response_message)
 
 
