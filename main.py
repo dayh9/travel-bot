@@ -1,14 +1,13 @@
 import os
 from html import unescape
 
+import discord
 from dotenv import load_dotenv
 
-import discord
 from commands import HotelDetails, HotelList, HotelListDesc
 from hotel_session import HotelSession
 
 load_dotenv()
-
 DISCORD_KEY = os.getenv("DISCORD_KEY")
 
 
@@ -39,7 +38,6 @@ class MyClient(discord.Client):
 
         if message.content.startswith(HotelList.LOCATION.value):
             location = message.content[len(HotelList.LOCATION.value) :]
-            # self.hotel_session = HotelSession()
             name, _ = self.hotel_session.set_location_and_destination_id(location)
             name_message = f"Wybrano {name}"
             await message.channel.send(name_message)

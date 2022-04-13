@@ -5,45 +5,20 @@ import requests
 from dotenv import load_dotenv
 from requests.exceptions import HTTPError
 
-load_dotenv()
+from extract import json_extract
 
+load_dotenv()
 RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
 
 
 class HotelSession:
     def __init__(
-        self,
-        location=None,
-        destination_id=None,
-        currency="EUR",
-        querystring=None
-        # check_in=None,
-        # check_out=None,
-        # adults=None,
-        # children=None,
-        # star_ratings=None,
-        # price_min=None,
-        # price_max=None,
-        # sort_order=None,
-        # guest_rating_minimum=None,
-        # amenity_id=None,
-        # hotels_list=None,
+        self, location=None, destination_id=None, currency="EUR", querystring=None
     ):
         self.location = location
         self.destination_id = destination_id
         self.querystring = querystring
         self.currency = currency
-        # self.check_in = check_in
-        # self.check_out = check_out
-        # self.adults = adults
-        # self.children = children
-        # self.star_ratings = star_ratings
-        # self.price_min = price_min
-        # self.price_max = price_max
-        # self.sort_order = sort_order
-        # self.guest_rating_minimum = guest_rating_minimum
-        # self.amenity_id = amenity_id
-        # self.hotels_list = hotels_list
 
     def set_location_and_destination_id(self, location):
 
@@ -55,8 +30,6 @@ class HotelSession:
         querystring = {"query": location, "currency": self.currency}
 
         success, data = self._send_request(url, headers, querystring)
-        # response = requests.request("GET", url, headers=headers, params=querystring)
-        # data = json.loads(response.text)
 
         if not success:
             return data, None
@@ -78,21 +51,18 @@ class HotelSession:
             "x-rapidapi-host": "hotels4.p.rapidapi.com",
         }
 
-        # TODO: VALIDACJA parametrow dodac
+        # TODO: Add params validation
         querystring = {
             "destinationId": self.destination_id,
             "pageNumber": "1",
             "pageSize": "25",
-            "checkIn": "2022-04-05",  # boilerplate data TODO: sciaganie daty
+            "checkIn": "2022-04-05",  # boilerplate data TODO: Add current date checking
             "checkOut": "2022-04-10",
             "currency": self.currency,
         }
         if self.querystring:
             for key, value in self.querystring.items():
                 querystring[key] = value
-
-        # print(f"before request {str(querystring)}")
-        # response = requests.request("GET", url, headers=headers, params=querystring)
 
         success, data = self._send_request(url, headers, querystring)
 
@@ -113,8 +83,6 @@ class HotelSession:
         try:
             print(f"request url={url},\nquerystring={querystring}")
             response = requests.get(url, headers=headers, params=querystring)
-            print(f"response: {str(response.text)}")
-            # If the response was successful, no Exception will be raised
             response.raise_for_status()
         except HTTPError as http_err:
             return False, f"HTTP error occurred: {http_err}"
@@ -124,13 +92,26 @@ class HotelSession:
             return True, json.loads(response.text)
 
     def _prepare_hotels_response(self, data):
-        if data["data"]["body"]["searchResults"]["results"]:
-            new_message = f"""{data["data"]["body"]["header"]}
-            Proponowany hotel:
-            {data["data"]["body"]["searchResults"]["results"][0]["name"]}
-            """
-            # Adres:
-            # {data["data"]["body"]["searchResults"]["results"][0]["address"]["streetAddress"]}
+        data = data["data"]["body"]
+
+        if data:
+            new_message = "Hotels info response:\n"
+
+            name = json_extract(data, "value")
+            if name:
+                new_message += f"Hotels in {name}\n"
+
+            total_count = json_extract(data, "totalCount")
+
+            if total_count:
+                new_message += f"Found {total_count} hotels\n"
+
+            results = json_extract(data, "results", True)
+
+            if results and results[0]:
+                new_message += f"Hotels:\n"
+                for num, hotel in enumerate(results, 1):
+                    new_message += f"{num}. {hotel['name']}\n"
 
         else:
             new_message = "No results found"
