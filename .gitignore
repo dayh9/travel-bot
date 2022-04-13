@@ -1,3 +1,4 @@
 .env
 bot-venv
 __pycache__
+.DS_Store
