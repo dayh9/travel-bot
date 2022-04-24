@@ -1,7 +1,19 @@
 from enum import Enum
 
 
-class HotelList(Enum):
+class SessionList(str, Enum):
+    START = "$start"
+    CLOSE = "$close"
+    ADD_GUEST = "$add guest "
+
+
+class SessionListDesc(str, Enum):
+    START = " -> start new session"
+    CLOSE = " -> close current session"
+    ADD_GUEST = " -> add guest to your session"
+
+
+class HotelList(str, Enum):
     HELP = "$help"
     CLEAR = "$clear"
 
@@ -24,7 +36,7 @@ class HotelList(Enum):
     GUEST_RATING_MINIMUM = "$guest rating min "
 
 
-class HotelListDesc(Enum):
+class HotelListDesc(str, Enum):
     HELP = " -> show possible commands"
     CLEAR = " -> clear filters for hotels"
 
@@ -47,7 +59,7 @@ class HotelListDesc(Enum):
     GUEST_RATING_MINIMUM = "<value> -> guest rating min [number]"
 
 
-class HotelDetails(Enum):
+class HotelDetails(str, Enum):
     CHECK_IN = "$check in "
     CHECK_OUT = "$check out "
 
