@@ -16,4 +16,5 @@ class Session:
         return False
 
     def add_guest(self, guest):
-        self.guests.append(guest)
+        if not guest in self.guests:
+            self.guests.append(guest)
