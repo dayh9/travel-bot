@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import date, timedelta
 
 import requests
 from dotenv import load_dotenv
@@ -9,6 +10,7 @@ from extract import json_extract
 
 load_dotenv()
 RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
+DEFAULT_SESSION_DURATION_DAYS = 7
 
 
 class HotelSession:
@@ -17,8 +19,8 @@ class HotelSession:
     ):
         self.location = location
         self.destination_id = destination_id
-        self.querystring = querystring
         self.currency = currency
+        self.querystring = querystring
 
     def set_location_and_destination_id(self, location):
 
@@ -52,12 +54,19 @@ class HotelSession:
         }
 
         # TODO: Add params validation
+        # mm/dd/y
+        today = date.today()
+        checkIn = today.strftime("%Y-%m-%d")
+        checkOut = (today + timedelta(days=DEFAULT_SESSION_DURATION_DAYS)).strftime(
+            "%Y-%m-%d"
+        )
+        print(f"{checkIn}, {checkOut}")
         querystring = {
             "destinationId": self.destination_id,
             "pageNumber": "1",
             "pageSize": "25",
-            "checkIn": "2022-04-05",  # boilerplate data TODO: Add current date checking
-            "checkOut": "2022-04-10",
+            "checkIn": checkIn,
+            "checkOut": checkOut,
             "currency": self.currency,
         }
         if self.querystring:

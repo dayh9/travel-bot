@@ -4,8 +4,14 @@ from html import unescape
 import discord
 from dotenv import load_dotenv
 
-from commands import HotelDetails, HotelList, HotelListDesc
-from hotel_session import HotelSession
+from commands import (
+    HotelDetails,
+    HotelList,
+    HotelListDesc,
+    SessionList,
+    SessionListDesc,
+)
+from session import Session
 
 load_dotenv()
 DISCORD_KEY = os.getenv("DISCORD_KEY")
@@ -14,105 +20,169 @@ DISCORD_KEY = os.getenv("DISCORD_KEY")
 class MyClient(discord.Client):
     def __init__(self, *, loop=None, **options):
         super().__init__(loop=loop, **options)
-        self.hotel_session = HotelSession()
+        self.sessions = []
+
+    def _get_session(self, channel_id):
+        session = [s for s in self.sessions if s.channel_id == channel_id]
+        if len(session) > 0:
+            return session[0]
+        return None
 
     async def on_ready(self):
         print("Logged on as {0}!".format(self.user))
 
     async def on_message(self, message):
-        print("Message from {0.author}: {0.content}".format(message))
+        print("Message from {0.author.id}: {0.content}; {0.channel.id}".format(message))
 
-        if message.author == client.user:
+        author = message.author
+        session = self._get_session(message.channel.id)
+
+        if author == client.user:
             return
 
-        if message.content.startswith(HotelList.HELP.value):
-            commands = [c for c in zip(HotelList, HotelListDesc)]
+        if message.content.startswith(HotelList.HELP):
+            commands = [c for c in zip(SessionList, SessionListDesc)]
+            commands += [c for c in zip(HotelList, HotelListDesc)]
             response_message = "Possible commands: \n"
             for command in commands:
                 response_message += f"{command[0].value}{command[1].value} \n"
-            await message.channel.send(response_message)
+            return await message.channel.send(response_message)
 
-        if message.content.startswith(HotelList.CLEAR.value):
-            self.hotel_session.querystring = None
-            await message.channel.send("Filters cleaned")
+        if message.content.startswith(SessionList.START):
+            if session:
+                return await message.channel.send("Session already exists")
+            else:
+                new_session = Session(author.id, message.channel.id)
+                self.sessions.append(new_session)
+                return await message.channel.send("Session started")
 
-        if message.content.startswith(HotelList.LOCATION.value):
-            location = message.content[len(HotelList.LOCATION.value) :]
-            name, _ = self.hotel_session.set_location_and_destination_id(location)
-            name_message = f"Wybrano {name}"
-            await message.channel.send(name_message)
+        if not session:
+            return await message.channel.send(
+                "Session doesn't exist\nSend $start to create session"
+            )
 
-        if message.content.startswith(HotelList.HOTELS.value):
-            if self.hotel_session:
-                hotels = self.hotel_session.get_hotels_for_destination_id()
+        if not session.is_valid_user(author.id):
+            return await message.channel.send(
+                f"""User {author} is not a guest of this session.\n
+                Ask {session.user} for permission (this user must react to this message)"""
+            )
+
+        if message.content.startswith(SessionList.CLOSE):
+            self.sessions.pop(self.sessions.index(session))
+            return await message.channel.send("Session closed")
+
+        ### Add commands only past this point
+
+        if message.content.startswith(HotelList.CLEAR):
+            session.hotel_session.querystring = None
+            return await message.channel.send("Filters cleaned")
+
+        if message.content.startswith(HotelList.LOCATION):
+            location = message.content[len(HotelList.LOCATION) :]
+            name, _ = session.hotel_session.set_location_and_destination_id(location)
+            name_message = f"Location set to {name}"
+            return await message.channel.send(name_message)
+
+        if message.content.startswith(HotelList.HOTELS):
+            if session.hotel_session:
+                hotels = session.hotel_session.get_hotels_for_destination_id()
             else:
                 hotels = "no location boilerplate"
-            await message.channel.send(hotels)
+            return await message.channel.send(hotels)
 
-        if message.content.startswith(HotelList.ADULTS.value):
-            adults = message.content[len(HotelList.ADULTS.value) :]
-            response_message = self.hotel_session.add_to_querysting("adults1", adults)
-            await message.channel.send(response_message)
+        if message.content.startswith(HotelList.ADULTS):
+            adults = message.content[len(HotelList.ADULTS) :]
+            response_message = session.hotel_session.add_to_querysting(
+                "adults1", adults
+            )
+            return await message.channel.send(response_message)
 
-        if message.content.startswith(HotelList.CHECK_IN.value):
-            check_in = message.content[len(HotelList.CHECK_IN.value) :]
-            response_message = self.hotel_session.add_to_querysting("checkIn", check_in)
-            await message.channel.send(response_message)
+        if message.content.startswith(HotelList.CHECK_IN):
+            check_in = message.content[len(HotelList.CHECK_IN) :]
+            response_message = session.hotel_session.add_to_querysting(
+                "checkIn", check_in
+            )
+            return await message.channel.send(response_message)
 
-        if message.content.startswith(HotelList.CHECK_OUT.value):
-            check_out = message.content[len(HotelList.CHECK_OUT.value) :]
-            response_message = self.hotel_session.add_to_querysting(
+        if message.content.startswith(HotelList.CHECK_OUT):
+            check_out = message.content[len(HotelList.CHECK_OUT) :]
+            response_message = session.hotel_session.add_to_querysting(
                 "checkOut", check_out
             )
-            await message.channel.send(response_message)
+            return await message.channel.send(response_message)
 
         if message.content.startswith(HotelList.CHILDREN.value):
             children = message.content[len(HotelList.CHILDREN.value) :]
-            response_message = self.hotel_session.add_to_querysting(
+            response_message = session.hotel_session.add_to_querysting(
                 "children1", children
             )
-            await message.channel.send(response_message)
+            return await message.channel.send(response_message)
 
-        if message.content.startswith(HotelList.STAR_RATINGS.value):
-            star_ratings = message.content[len(HotelList.STAR_RATINGS.value) :]
-            response_message = self.hotel_session.add_to_querysting(
+        if message.content.startswith(HotelList.STAR_RATINGS):
+            star_ratings = message.content[len(HotelList.STAR_RATINGS) :]
+            response_message = session.hotel_session.add_to_querysting(
                 "starRatings", star_ratings
             )
-            await message.channel.send(response_message)
+            return await message.channel.send(response_message)
 
-        if message.content.startswith(HotelList.PRICE_MIN.value):
-            price_min = message.content[len(HotelList.PRICE_MIN.value) :]
-            response_message = self.hotel_session.add_to_querysting(
+        if message.content.startswith(HotelList.PRICE_MIN):
+            price_min = message.content[len(HotelList.PRICE_MIN) :]
+            response_message = session.hotel_session.add_to_querysting(
                 "priceMin", price_min
             )
-            await message.channel.send(response_message)
+            return await message.channel.send(response_message)
 
-        if message.content.startswith(HotelList.PRICE_MAX.value):
-            price_max = message.content[len(HotelList.PRICE_MAX.value) :]
-            response_message = self.hotel_session.add_to_querysting(
+        if message.content.startswith(HotelList.PRICE_MAX):
+            price_max = message.content[len(HotelList.PRICE_MAX) :]
+            response_message = session.hotel_session.add_to_querysting(
                 "priceMax", price_max
             )
-            await message.channel.send(response_message)
+            return await message.channel.send(response_message)
 
         # BEST_SELLER, STAR_RATING_HIGHEST_FIRST, STAR_RATING_LOWEST_FIRST, DISTANCE_FROM_LANDMARK, GUEST_RATING, PRICE_HIGHEST_FIRST, PRICE
-        if message.content.startswith(HotelList.SORT_ORDER.value):
-            sort = message.content[len(HotelList.SORT_ORDER.value) :]
-            response_message = self.hotel_session.add_to_querysting("sortOrder", sort)
-            await message.channel.send(response_message)
+        if message.content.startswith(HotelList.SORT_ORDER):
+            sort = message.content[len(HotelList.SORT_ORDER) :]
+            response_message = session.hotel_session.add_to_querysting(
+                "sortOrder", sort
+            )
+            return await message.channel.send(response_message)
 
-        if message.content.startswith(HotelList.GUEST_RATING_MINIMUM.value):
+        if message.content.startswith(HotelList.GUEST_RATING_MINIMUM):
             guest_rating_minimum = message.content[
-                len(HotelList.GUEST_RATING_MINIMUM.value) :
+                len(HotelList.GUEST_RATING_MINIMUM) :
             ]
-            response_message = self.hotel_session.add_to_querysting(
+            response_message = session.hotel_session.add_to_querysting(
                 "guestRatingMin", guest_rating_minimum
             )
-            await message.channel.send(response_message)
+            return await message.channel.send(response_message)
 
         if message.content.startswith("$test"):
 
             response_message = unescape("total 155 € for 5&nbsp;nights")
-            await message.channel.send(response_message)
+            return await message.channel.send(response_message)
+
+        return await message.channel.send("Not valid command")
+
+    async def on_reaction_add(self, reaction, user):
+        session = self._get_session(reaction.message.channel.id)
+        asking_for_guest = reaction.message.author
+
+        if asking_for_guest == client.user:
+            return
+
+        if not session:
+            return
+
+        if session.user == user.id:
+            if session.user == asking_for_guest.id:
+                return await reaction.message.channel.send(f"Host user can't be guest!")
+
+            session.add_guest(asking_for_guest.id)
+            return await reaction.message.channel.send(
+                f"{user} reacted with {reaction.emoji} and added {asking_for_guest} to this session"
+            )
+
+        return
 
 
 client = MyClient()
