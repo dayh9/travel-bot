@@ -73,62 +73,6 @@ class TravelSession:
         print(airline)
         print(price)
 
-    def get_name_and_destination_id(self):
-
-        url = "https://hotels4.p.rapidapi.com/locations/v2/search"
-
-        querystring = {"query": self.location, "currency": self.currency}
-
-        headers = {
-            "x-rapidapi-key": RAPIDAPI_KEY,
-            "x-rapidapi-host": "hotels4.p.rapidapi.com",
-        }
-
-        response = requests.request("GET", url, headers=headers, params=querystring)
-        data = json.loads(response.text)
-
-        destination_id = data["suggestions"][0]["entities"][0]["destinationId"]
-        name = data["suggestions"][0]["entities"][0]["name"]
-
-        self.destination_id = destination_id
-        return name, destination_id
-
-    def get_hotels_for_destination_id(self):
-        if not self.destination_id:
-            return "Please provide location for hotels to be found!"
-
-        url = "https://hotels4.p.rapidapi.com/properties/list"
-
-        querystring = {
-            "destinationId": self.destination_id,
-            "pageNumber": "1",
-            "pageSize": "25",
-            "checkIn": "2022-04-02",  # boilerplate data
-            "checkOut": "2022-04-09",
-            "currency": self.currency,
-        }
-
-        for key, value in self.querystring.items():
-            querystring[key] = value
-
-        headers = {
-            "x-rapidapi-key": RAPIDAPI_KEY,
-            "x-rapidapi-host": "hotels4.p.rapidapi.com",
-        }
-
-        print(f"before request {str(querystring)}")
-        response = requests.request("GET", url, headers=headers, params=querystring)
-
-        data = json.loads(response.text)
-        new_message = f"""{data["data"]["body"]["header"]} 
-        Proponowany hotel:
-        {data["data"]["body"]["searchResults"]["results"][0]["name"]}
-        """
-        # Adres:
-        # {data["data"]["body"]["searchResults"]["results"][0]["address"]["streetAddress"]}
-
-        return new_message
-
     def add_to_querysting(self, parameter, value):
         if not self.querystring:
             self.querystring = {}
