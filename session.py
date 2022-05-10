@@ -1,5 +1,5 @@
 from hotel_session import HotelSession
-
+from travel_session import TravelSession
 
 class Session:
     def __init__(self, user, channel_id):
@@ -7,7 +7,7 @@ class Session:
         self.channel_id = channel_id
         self.guests = []
         self.hotel_session = HotelSession()  # possibility of adding multiple sessions
-        # self.travel_session = TravelSession()
+        self.travel_session = TravelSession()
 
     def is_valid_user(self, user_id):
         valid_users = [self.user] + self.guests
