@@ -57,7 +57,7 @@ class TravelSession:
             "limit": "30",
             "page": "1",
             "one_way": "true",
-            "token": TRAVELPAYOUTS_KEY,
+            "token": TRAVEL_PAYOUTS_KEY,
         }
 
         response = requests.request("GET", url, params=querystring)
