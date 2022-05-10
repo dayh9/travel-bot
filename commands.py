@@ -33,6 +33,14 @@ class HotelList(str, Enum):
 
     GUEST_RATING_MINIMUM = "$guest rating min "
 
+class TravelList(str, Enum):
+    AIRPORT = "$airport"
+    FLIGHTS = "$flights"
+
+class TravelListDesc(str, Enum):
+    AIRPORT = "-> provide location for airport [string]"
+    FLIGHTS = "-> show list of possible flights"
+
 
 class HotelListDesc(str, Enum):
     HELP = " -> show possible commands"
