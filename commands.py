@@ -34,11 +34,18 @@ class HotelList(str, Enum):
     GUEST_RATING_MINIMUM = "$guest rating min "
 
 class TravelList(str, Enum):
-    AIRPORT = "$airport"
+    AIRPORTORIGIN = "$airport origin "
+    AIRPORTDESTINATION = "$airport destination "
+    FLIGHTDEPARTUREDATE = "flight departure "
+    FLIGHTRETURNATDATE = "flight return "
+    
     FLIGHTS = "$flights"
 
 class TravelListDesc(str, Enum):
-    AIRPORT = "-> provide location for airport [string]"
+    AIRPORTORIGIN = "-> provide location for origin airport [string]"
+    AIRPORTDESTINATION = "-> provide location for destination airport [string]"
+    FLIGHTDEPARTUREDATE = "<value> -> provide flight departure date [format: YYYY-MM-DD]"
+    FLIGHTRETURNATDATE = "<value> -> provide flight return date [format: YYYY-MM-DD]"
     FLIGHTS = "-> show list of possible flights"
 
 

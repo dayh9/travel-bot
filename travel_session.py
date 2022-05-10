@@ -26,10 +26,10 @@ class TravelSession:
         self.currency = currency
         self.departureAirport = departureAirport
 
-    def get_airport_by_location_name(self):
+    def get_airport_by_location_name(self, location):
         url = "https://aerodatabox.p.rapidapi.com/airports/search/term"
 
-        querystring = {"q": self.departureAirport, "limit": "10"}
+        querystring = {"q": location, "limit": "10"}
 
         headers = {
             "X-RapidAPI-Host": "aerodatabox.p.rapidapi.com",
@@ -40,20 +40,27 @@ class TravelSession:
         data = json.loads(response.text)
 
         airport_code = data["items"][0]["iata"]
-        print(airport_code)
+        self.departureAirport
+        return airport_code
 
     def get_flight_data(self):
         url = "https://api.travelpayouts.com/aviasales/v3/prices_for_dates"
 
+        today = date.today()
+        departureAt = today.strftime("%Y-%m-%d")
+        returnAt = (today + timedelta(days=DEFAULT_SESSION_DURATION_DAYS)).strftime(
+            "%Y-%m-%d"
+        )
+
         querystring = {
             "origin": self.departureAirport,
             "destination": self.location,
-            "departure_at": "2022-07",
-            "return_at": "2022-08",
+            "departure_at": departureAt,
+            "return_at": returnAt,
             "unique": "false",
             "sorting": "price",
             "direct": "false",
-            "currency": "pln",
+            "currency": "eur",
             "limit": "30",
             "page": "1",
             "one_way": "true",

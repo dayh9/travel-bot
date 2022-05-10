@@ -8,6 +8,8 @@ from commands import (
     HotelDetails,
     HotelList,
     HotelListDesc,
+    TravelList,
+    TravelListDesc,
     SessionList,
     SessionListDesc,
 )
@@ -160,6 +162,45 @@ class MyClient(discord.Client):
 
             response_message = unescape("total 155 € for 5&nbsp;nights")
             return await message.channel.send(response_message)
+
+
+
+
+
+        if message.content.startswith(TravelList.AIRPORTORIGIN):
+            location = message.content[len(TravelList.AIRPORTORIGIN) :]
+            name, _ = session.travel_session.get_airport_by_location_name(location)
+            name_message = f"Origin airport set to {name}"
+            return await message.channel.send(name_message)
+
+        if message.content.startswith(TravelList.AIRPORTDESTINATION):
+            location = message.content[len(TravelList.AIRPORTDESTINATION) :]
+            name, _ = session.travel_session.get_airport_by_location_name(location)
+            name_message = f"Destination airport set to {name}"
+            return await message.channel.send(name_message)
+
+        if message.content.startswith(TravelList.FLIGHTDEPARTUREDATE):
+            flight_departure_date = message.content[len(TravelList.FLIGHTDEPARTUREDATE) :]
+            response_message = session.travel_session.add_to_querysting(
+                "flightDepartureDate", flight_departure_date
+            )
+            return await message.channel.send(response_message)
+
+        if message.content.startswith(TravelList.FLIGHTRETURNATDATE):
+            flight_return_date = message.content[len(TravelList.FLIGHTRETURNATDATE) :]
+            response_message = session.travel_session.add_to_querysting(
+                "flightReturnDate", flight_return_date
+            )
+            return await message.channel.send(response_message)
+
+        if message.content.startswith(TravelList.FLIGHTS):
+            if session.travel_session:
+                flights = session.travel_session.get_flight_data()
+            else:
+                flights = "no flight boilerplate"
+            return await message.channel.send(flights)
+
+
 
         return await message.channel.send("Not valid command")
 
