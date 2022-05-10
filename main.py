@@ -62,10 +62,9 @@ class MyClient(discord.Client):
             )
 
         if not session.is_valid_user(author.id):
-            user_name = self.get_user(session.user).name
             return await message.channel.send(
                 f"""User {author} is not a guest of this session.\n
-                Ask {user_name} for permission (this user must react to your message)"""
+                Ask session owner for permission (this user must react to your message)"""
             )
 
         if message.content.startswith(SessionList.CLOSE):
