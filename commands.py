@@ -4,13 +4,11 @@ from enum import Enum
 class SessionList(str, Enum):
     START = "$start"
     CLOSE = "$close"
-    ADD_GUEST = "$add guest "
 
 
 class SessionListDesc(str, Enum):
     START = " -> start new session"
     CLOSE = " -> close current session"
-    ADD_GUEST = " -> add guest to your session"
 
 
 class HotelList(str, Enum):
