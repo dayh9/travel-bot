@@ -45,13 +45,6 @@ class MyClient(discord.Client):
         if message.content.startswith(HotelList.HELP):
             commands = [c for c in zip(SessionList, SessionListDesc)]
             commands += [c for c in zip(HotelList, HotelListDesc)]
-            response_message = "Possible commands: \n"
-            for command in commands:
-                response_message += f"{command[0].value}{command[1].value} \n"
-            return await message.channel.send(response_message)
-
-        if message.content.startswith(TravelList.HELP):
-            commands = [c for c in zip(SessionList, SessionListDesc)]
             commands += [c for c in zip(TravelList, TravelListDesc)]
             response_message = "Possible commands: \n"
             for command in commands:
