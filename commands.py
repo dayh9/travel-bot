@@ -34,6 +34,7 @@ class HotelList(str, Enum):
     GUEST_RATING_MINIMUM = "$guest rating min "
 
 class TravelList(str, Enum):
+    HELP = "$help"
     AIRPORTORIGIN = "$airport origin "
     AIRPORTDESTINATION = "$airport destination "
     FLIGHTDEPARTUREDATE = "flight departure "
