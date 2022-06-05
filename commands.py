@@ -4,17 +4,18 @@ from enum import Enum
 class SessionList(str, Enum):
     START = "$start"
     CLOSE = "$close"
+    HELP = "$help"
+    CLEAR = "$clear"
 
 
 class SessionListDesc(str, Enum):
     START = " -> start new session"
     CLOSE = " -> close current session"
+    HELP = " -> show possible commands"
+    CLEAR = " -> clear all filters"
 
 
 class HotelList(str, Enum):
-    HELP = "$help"
-    CLEAR = "$clear"
-
     LOCATION = "$location "
     HOTELS = "$hotels"
 
@@ -34,28 +35,7 @@ class HotelList(str, Enum):
     GUEST_RATING_MINIMUM = "$guest rating min "
 
 
-class TravelList(str, Enum):
-    AIRPORTORIGIN = "$airport origin "
-    AIRPORTDESTINATION = "$airport destination "
-    FLIGHTDEPARTUREDATE = "flight departure "
-    FLIGHTRETURNATDATE = "flight return "
-    FLIGHTS = "$flights"
-
-
-class TravelListDesc(str, Enum):
-    AIRPORTORIGIN = "<value> -> provide location for origin airport [string]"
-    AIRPORTDESTINATION = "<value> -> provide location for destination airport [string]"
-    FLIGHTDEPARTUREDATE = (
-        "<value> -> provide flight departure date [format: YYYY-MM-DD]"
-    )
-    FLIGHTRETURNATDATE = "<value> -> provide flight return date [format: YYYY-MM-DD]"
-    FLIGHTS = " -> show list of possible flights"
-
-
 class HotelListDesc(str, Enum):
-    HELP = " -> show possible commands"
-    CLEAR = " -> clear filters for hotels"
-
     LOCATION = "<value> -> provide location for your next journey [string]"
     HOTELS = " -> run to list hotels in the location"
 
@@ -75,9 +55,19 @@ class HotelListDesc(str, Enum):
     GUEST_RATING_MINIMUM = "<value> -> guest rating min [number]"
 
 
-class HotelDetails(str, Enum):
-    CHECK_IN = "$check in "
-    CHECK_OUT = "$check out "
+class TravelList(str, Enum):
+    AIRPORT_ORIGIN = "$airport origin "
+    AIRPORT_DESTINATION = "$airport destination "
+    FLIGHT_DEPARTURE_DATE = "$flight departure "
+    FLIGHT_RETURN_DATE = "$flight return "
+    FLIGHTS = "$flights"
 
-    ADULTS = "$adults "
-    CHILDREN = "$children "
+
+class TravelListDesc(str, Enum):
+    AIRPORT_ORIGIN = "<value> -> provide location for origin airport [string]"
+    AIRPORT_DESTINATION = "<value> -> provide location for destination airport [string]"
+    FLIGHT_DEPARTURE_DATE = (
+        "<value> -> provide flight departure date [format: YYYY-MM-DD]"
+    )
+    FLIGHT_RETURNAT_DATE = "<value> -> provide flight return date [format: YYYY-MM-DD]"
+    FLIGHTS = " -> show list of possible flights"

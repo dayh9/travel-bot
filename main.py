@@ -5,13 +5,12 @@ import discord
 from dotenv import load_dotenv
 
 from commands import (
-    HotelDetails,
     HotelList,
     HotelListDesc,
-    TravelList,
-    TravelListDesc,
     SessionList,
     SessionListDesc,
+    TravelList,
+    TravelListDesc,
 )
 from session import Session
 
@@ -42,13 +41,19 @@ class MyClient(discord.Client):
         if author == client.user:
             return
 
-        if message.content.startswith(HotelList.HELP):
-            commands = [c for c in zip(SessionList, SessionListDesc)]
+        if message.content.startswith(SessionList.HELP):
+            commands = ["\n--- Session commands ---\n"]
+            commands += [c for c in zip(SessionList, SessionListDesc)]
+            commands += ["\n--- Hotel search commands ---\n"]
             commands += [c for c in zip(HotelList, HotelListDesc)]
+            commands += ["\n--- Travel search commands ---\n"]
             commands += [c for c in zip(TravelList, TravelListDesc)]
             response_message = "Possible commands: \n"
             for command in commands:
-                response_message += f"{command[0].value}{command[1].value} \n"
+                if isinstance(command, str):
+                    response_message += command
+                else:
+                    response_message += f"{command[0].value}{command[1].value} \n"
             return await message.channel.send(response_message)
 
         if message.content.startswith(SessionList.START):
@@ -76,8 +81,9 @@ class MyClient(discord.Client):
 
         ### Add commands only past this point
 
-        if message.content.startswith(HotelList.CLEAR):
+        if message.content.startswith(SessionList.CLEAR):
             session.hotel_session.querystring = None
+            session.travel_session.querystring = None
             return await message.channel.send("Filters cleaned")
 
         if message.content.startswith(HotelList.LOCATION):
@@ -90,7 +96,7 @@ class MyClient(discord.Client):
             if session.hotel_session:
                 hotels = session.hotel_session.get_hotels_for_destination_id()
             else:
-                hotels = "no location boilerplate"
+                hotels = "No available hotels"
             return await message.channel.send(hotels)
 
         if message.content.startswith(HotelList.ADULTS):
@@ -164,33 +170,33 @@ class MyClient(discord.Client):
             response_message = unescape("total 155 € for 5&nbsp;nights")
             return await message.channel.send(response_message)
 
-
-
-
-
-        if message.content.startswith(TravelList.AIRPORTORIGIN):
-            location = message.content[len(TravelList.AIRPORTORIGIN) :]
-            name, _ = session.travel_session.get_airport_by_location_name(location)
+        if message.content.startswith(TravelList.AIRPORT_ORIGIN):
+            location = message.content[len(TravelList.AIRPORT_ORIGIN) :]
+            name, code = session.travel_session.get_airport_by_location_name(location)
+            session.travel_session.set_origin(name, code)
             name_message = f"Origin airport set to {name}"
             return await message.channel.send(name_message)
 
-        if message.content.startswith(TravelList.AIRPORTDESTINATION):
-            location = message.content[len(TravelList.AIRPORTDESTINATION) :]
-            name, _ = session.travel_session.get_airport_by_location_name(location)
+        if message.content.startswith(TravelList.AIRPORT_DESTINATION):
+            location = message.content[len(TravelList.AIRPORT_DESTINATION) :]
+            name, code = session.travel_session.get_airport_by_location_name(location)
+            session.travel_session.set_destination(name, code)
             name_message = f"Destination airport set to {name}"
             return await message.channel.send(name_message)
 
-        if message.content.startswith(TravelList.FLIGHTDEPARTUREDATE):
-            flight_departure_date = message.content[len(TravelList.FLIGHTDEPARTUREDATE) :]
+        if message.content.startswith(TravelList.FLIGHT_DEPARTURE_DATE):
+            flight_departure_date = message.content[
+                len(TravelList.FLIGHT_DEPARTURE_DATE) :
+            ]
             response_message = session.travel_session.add_to_querysting(
-                "flightDepartureDate", flight_departure_date
+                "departure_at", flight_departure_date
             )
             return await message.channel.send(response_message)
 
-        if message.content.startswith(TravelList.FLIGHTRETURNATDATE):
-            flight_return_date = message.content[len(TravelList.FLIGHTRETURNATDATE) :]
+        if message.content.startswith(TravelList.FLIGHT_RETURN_DATE):
+            flight_return_date = message.content[len(TravelList.FLIGHT_RETURN_DATE) :]
             response_message = session.travel_session.add_to_querysting(
-                "flightReturnDate", flight_return_date
+                "return_at", flight_return_date
             )
             return await message.channel.send(response_message)
 
@@ -198,10 +204,8 @@ class MyClient(discord.Client):
             if session.travel_session:
                 flights = session.travel_session.get_flight_data()
             else:
-                flights = "no flight boilerplate"
+                flights = "No available flights"
             return await message.channel.send(flights)
-
-
 
         return await message.channel.send("Not valid command")
 
